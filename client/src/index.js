@@ -11,6 +11,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import storage from "redux-persist/lib/storage";
 import App from "./App";
 import "./App.css";
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import authReducer from "./state/index";
 
 const persistConfig = { key: "root", storage, version: 1 };
@@ -35,3 +36,6 @@ root.render(
   </Provider>
   // </React.StrictMode>
 );
+
+// Register Service Worker
+serviceWorkerRegistration.register();
