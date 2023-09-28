@@ -17,7 +17,6 @@ import userRoutes from "./routes/user.js";
 
 import DB from "./Database/DB.js";
 import { createPost } from "./controllers/post.js";
-import { verifyToken } from "./middleware/ReqCheck.js";
 
 // CONFIGURATIONS
 const __filename = fileURLToPath(import.meta.url);
@@ -52,7 +51,7 @@ const upload = multer({ storage });
 // ROUTES WITH FILES 
 app.post("/auth/register", upload.single("picture"), Register);
 app.patch("/user/:userId", upload.single("picture"), updateUser);
-app.post("/posts", verifyToken, upload.single("picture"), createPost);
+app.post("/posts", upload.single("picture"), createPost);
 
 
 // ROUTES

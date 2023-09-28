@@ -19,7 +19,6 @@ function MyPostWidget() {
     const [image, setImage] = useState(null);
     const [post, setPost] = useState("");
     const { palette } = useTheme();
-    const token = useSelector((state) => state.token);
     const { _id, picturePath } = useSelector((state) => state.user);
     const isNonMobile = useMediaQuery("(min-width: 1000px)");
     const mediumMain = palette.neutral.mediumMain;
@@ -44,12 +43,7 @@ function MyPostWidget() {
             formData.append("picturePath", image.name);
         }
 
-        const res = await axios.post(`${process.env.REACT_APP_URL}/posts`, formData, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const res = await axios.post(`${process.env.REACT_APP_URL}/posts`, formData);
         const posts = res.data;
 
         dispatch(setPosts({ posts }));
