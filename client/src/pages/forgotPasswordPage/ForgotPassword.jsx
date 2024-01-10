@@ -23,7 +23,7 @@ function ForgotPassword() {
 
         if (email) {
             const GetUser = async () => {
-                await axios.get(`${process.env.REACT_APP_URL}/users/user/${email}`)
+                await axios.get(`${process.env.REACT_APP_URL}/users/user/email/${email}`)
                     .then((res) => {
                         setToken(res.data);
                         setMsg(true);
@@ -41,7 +41,7 @@ function ForgotPassword() {
         const template_params = {
             user_name: "Admin",
             user_email: email,
-            message: `https://placement-helper-alumini.netlify.app/` + token
+            message: "https://placement-helper-alumini.netlify.app/password/" + token
         }
         emailjs.send(`${process.env.REACT_APP_SERVICEID}`, `${process.env.REACT_APP_TEMPLATEID}`, template_params, `${process.env.REACT_APP_USERID}`);
     }

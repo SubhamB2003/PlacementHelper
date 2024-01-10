@@ -1,37 +1,29 @@
 import express from "express";
-import {
-    AddRemoveLike,
-    commentUpdate,
-    createComment,
-    getFeedPosts, getUserPosts,
-    postUpdate,
-    removeComment,
-    removePost,
-    sharePost
-} from "../controllers/post.js";
+import { AddRemoveLike, commentUpdate, createComment, createPost, getFeedPosts, getUserPosts, postUpdate, removeComment, removePost, sharePost } from "../controllers/post.js";
 import { verifyToken } from "../middleware/ReqCheck.js";
 
 const router = express.Router();
 
 // CREATE
-router.post("/comment", verifyToken, createComment);
+router.post("/post", verifyToken, createPost);
+router.post("/post/comment", verifyToken, createComment);
 
 
 // READ
 router.get("/", verifyToken, getFeedPosts);
-router.get("/:userId/posts", verifyToken, getUserPosts);
-router.get("/:postId", sharePost);
+router.get("/post/:userId", verifyToken, getUserPosts);
+router.get("/post/share/:postId", sharePost);
 
 
 // UPDATE
-router.patch("/", verifyToken, postUpdate);
-router.patch("/:id/likes", verifyToken, AddRemoveLike);
-router.patch("/comment", verifyToken, commentUpdate);
+router.patch("/post", verifyToken, postUpdate);
+router.patch("/post/react/:postId", verifyToken, AddRemoveLike);
+router.patch("/post/comment", verifyToken, commentUpdate);
 
 
 // REMOVE
-router.delete("/:postId/removepost", verifyToken, removePost);
-router.delete("/comment", verifyToken, removeComment);
+router.delete("/post/:postId", verifyToken, removePost);
+router.delete("/post/comment/:cmtId", verifyToken, removeComment);
 
 
 export default router;

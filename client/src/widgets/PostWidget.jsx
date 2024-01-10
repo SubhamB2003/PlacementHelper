@@ -1,6 +1,7 @@
 import { ChatBubbleOutlineRounded, FavoriteBorderOutlined, FavoriteOutlined, ShareOutlined } from '@mui/icons-material';
 import { Box, Divider, IconButton, Typography, useTheme } from '@mui/material';
 import axios from 'axios';
+// import { ref } from 'firebase/storage';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RWebShare } from "react-web-share";
@@ -10,6 +11,7 @@ import Friend from '../components/Friend';
 import ModelPopup from '../components/ModelPopup';
 import Showmore from '../components/Showmore.jsx';
 import WidgetWrapper from '../components/WidgetWrapper';
+// import { storage } from '../firebase-config.js';
 import { setPost } from '../state';
 import CommentWidget from './CommentWidget';
 import MyCommentWidget from './MyCommentWidget';
@@ -17,14 +19,16 @@ import MyCommentWidget from './MyCommentWidget';
 
 function PostWidget({ post }) {
 
+    const curPostId = post._id;
     const dispatch = useDispatch();
-    const [isComments, setIsComments] = useState(false);
-    const [postId, setPostId] = useState("");
+
     const [desc, setDesc] = useState("");
+    const [postId, setPostId] = useState("");
     const [openModal, setOpenModal] = useState(false);
+    const [isComments, setIsComments] = useState(false);
+
     const token = useSelector((state) => state.token);
     const userId = useSelector((state) => state.user._id);
-    const curPostId = post._id;
     const isLiked = Boolean(post.likes[userId]);
     const likeCount = Object.keys(post.likes).length;
 
@@ -33,15 +37,17 @@ function PostWidget({ post }) {
 
 
     const AddRemoveLike = async () => {
-        const res = await axios.patch(`${process.env.REACT_APP_URL}/posts/${curPostId}/likes`, { userId }, {
+        const res = await axios.patch(`${process.env.REACT_APP_URL}/posts/post/react/${curPostId}`, { userId }, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
-        const Data = res.data;
-        dispatch(setPost({ post: Data }));
-        successSound();
+        if (res.status === 200) {
+            const Data = res.data;
+            dispatch(setPost({ post: Data }));
+            successSound();
+        }
     }
 
     const updatePostData = (postId, description) => {
@@ -58,17 +64,14 @@ function PostWidget({ post }) {
                 description={post.description}
                 updatePostData={updatePostData}
                 postUserId={post.userId}
-                name={post.userName}
+                userName={post.userName}
                 createdAt={post.createdAt}
-                userPicturePath={post.userPicturePath}
+                isUserPicture={post.isUserPicture}
             />
             <Showmore>{post.description}</Showmore>
-            {post.picturePath && (
-                <img width="100%" style={{
-                    borderRadius: "0.75rem",
-                    marginTop: "0.75rem"
-                }} src={`${process.env.REACT_APP_URL}/assets/${post.picturePath}`}
-                    alt="postImage" />
+            {post.isPicture && (
+                <img width="100%" style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }} alt="postImage"
+                    src={`${process.env.REACT_APP_POST_UPLOADIMAGE_STARTURL}${curPostId}${process.env.REACT_APP_POST_UPLOADIMAGE_ENDURL}`} />
             )}
 
             <Flexbetween>
@@ -99,7 +102,7 @@ function PostWidget({ post }) {
                 <RWebShare
                     data={{
                         text: "Web Share",
-                        url: `https://placement-helper-alumini.netlify.app/sharepost/${curPostId}`,
+                        url: `https://placement-helper-alumini.netlify.app/post/share/${curPostId}`,
                         title: "Post Data",
                     }}>
                     <Flexbetween gap="0.3rem" sx={{ cursor: "pointer" }}>
@@ -117,8 +120,8 @@ function PostWidget({ post }) {
             {isComments && (
                 <Box>
                     <Divider />
-                    {post.comments.map((commentData) => (
-                        <CommentWidget commentData={commentData} key={commentData._id} curPostId={curPostId} />
+                    {post?.comments?.map((commentData) => (
+                        <CommentWidget key={commentData._id} commentData={commentData} postId={curPostId} />
                     ))}
                 </Box>
             )}

@@ -55,7 +55,7 @@ function App() {
                 <Route path='/user/saveposts' element={isAuth ? <SavePosts /> : <Navigate to="/" />} />
                 <Route path="/forgotpassword" element={isAuth ? <HomePage /> : <ForgotPassword />} />
                 <Route path="/password/:token" element={isAuth ? <HomePage /> : <UpdatePassword />} />
-                <Route path='/sharepost/:postId' element={<SharePost />} />
+                <Route path='/post/share/:postId' element={<SharePost />} />
               </Routes>
             </Suspense>
           </BrowserRouter>

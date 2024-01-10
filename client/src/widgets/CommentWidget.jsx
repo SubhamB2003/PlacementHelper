@@ -1,5 +1,5 @@
 import { DeleteOutline, EditOutlined, MoreHoriz } from '@mui/icons-material'
-import { Box, Divider, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Avatar, Box, Divider, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -28,18 +28,20 @@ function CommentWidget({ commentData, curPostId }) {
     const [openModal, setOpenModal] = useState(false);
 
 
-    const handlePostRemove = async (cmtId) => {
-        const Data = { userId, postId, cmtId };
-        const res = await axios.delete(`${process.env.REACT_APP_URL}/posts/comment`, {
+    const handlePostCommentRemove = async (cmtId) => {
+        const Data = { userId, postId };
+        const res = await axios.delete(`${process.env.REACT_APP_URL}/posts/post/comment/${cmtId}`, {
             data: Data,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
-        const post = res.data;
-        dispatch(setPost({ post }));
-        successSound();
+        if (res.status === 200) {
+            const post = res.data;
+            dispatch(setPost({ post }));
+            successSound();
+        }
     }
 
     const updateCommentData = (comment) => {
@@ -49,12 +51,13 @@ function CommentWidget({ commentData, curPostId }) {
 
 
     return (
-        <Box padding="0 1rem">
+        <Box padding="0 1rem" key={commentData._id}>
             <ModelPopup setOpenModal={setOpenModal} openModal={openModal} comment={comment} setComment={setComment} postId={postId} cmtId={cmtId} isComment />
             <Box>
-                <Flexbetween padding={1} display="flex" >
+                <Flexbetween padding="0.6rem 0.6rem 0.6rem 0" display="flex" >
                     <Box display="flex" alignItems="center" gap={2}>
-                        <UserImage image={commentData.userPicturePath} size={isNonMobile ? 50 : 45} />
+                        {commentData.isUserPicture ? <UserImage image={commentData.userId} size={isNonMobile ? 50 : 45} />
+                            : <Avatar>{commentData.userName.charAt(0).toUpperCase()}</Avatar>}
                         <Box>
                             <Typography fontFamily="serif" color={main} fontSize={isNonMobile ? 18 : 16}>{commentData.userName}</Typography>
                             <Typography fontFamily="serif" color={medium} fontSize={12}>{new Date(commentData.updatedAt).toLocaleString()}</Typography>
@@ -89,7 +92,7 @@ function CommentWidget({ commentData, curPostId }) {
                                     <Divider />
 
                                     <Box display="flex" justifyItems="center" padding="0.5rem 0.6rem" sx={{ cursor: "pointer" }}
-                                        onClick={() => handlePostRemove(cmtId)}>
+                                        onClick={() => handlePostCommentRemove(cmtId)}>
                                         <DeleteOutline fontSize="small" sx={{ marginRight: "10px", color: main }} />
                                         <Typography fontFamily="serif" fontWeight="500" fontSize="0.9rem" color={main}>Delete</Typography>
                                     </Box>
@@ -99,7 +102,7 @@ function CommentWidget({ commentData, curPostId }) {
                     </Box>
                 </Flexbetween>
                 <Box sx={{ padding: "0 0 5px 0" }}>
-                    <Showmore fontSize={16}>{commentData.comment}</Showmore>
+                    <Showmore fontSize={16} mt={0}>{commentData.comment}</Showmore>
                 </Box>
             </Box>
             <Divider />

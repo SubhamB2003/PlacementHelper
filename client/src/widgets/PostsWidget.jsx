@@ -19,19 +19,23 @@ function PostsWidget({ userId, isProfile = false }) {
                 'Authorization': `Bearer ${token}`
             }
         });
-        const Data = res.data;
-        dispatch(setPosts({ posts: Data }));
+        if (res.status === 200) {
+            const Data = res.data;
+            dispatch(setPosts({ posts: Data }));
+        }
     };
 
     const getUserPosts = async () => {
-        const res = await axios.get(`${process.env.REACT_APP_URL}/posts/${userId}/posts`, {
+        const res = await axios.get(`${process.env.REACT_APP_URL}/posts/post/${userId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
-        const Data = res.data;
-        dispatch(setPosts({ posts: Data }));
+        if (res.status === 200) {
+            const Data = res.data;
+            dispatch(setPosts({ posts: Data }));
+        }
     }
 
     useEffect(() => {
@@ -44,7 +48,7 @@ function PostsWidget({ userId, isProfile = false }) {
 
     return (
         <Box>
-            {posts.map((post) => (
+            {posts?.map((post) => (
                 <PostWidget key={post._id} post={post} />
             ))}
         </Box>

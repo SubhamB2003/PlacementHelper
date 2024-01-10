@@ -16,7 +16,6 @@ function MyCommentWidget({ postId }) {
     const token = useSelector((state) => state.token);
     const user = useSelector((state) => state.user);
     const userId = user._id;
-    const updatedAt = new Date();
 
     const { palette } = useTheme();
     const main = palette.neutral.main;
@@ -26,16 +25,18 @@ function MyCommentWidget({ postId }) {
 
 
     const handleComment = async (postId) => {
-        const res = await axios.post(`${process.env.REACT_APP_URL}/posts/comment`, { userId, postId, comment, updatedAt }, {
+        const res = await axios.post(`${process.env.REACT_APP_URL}/posts/post/comment`, { userId, postId, comment }, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
-        setComment("");
-        successSound();
-        const post = res.data;
-        dispatch(setPost({ post }));
+        if (res.status === 200) {
+            setComment("");
+            successSound();
+            const post = res.data;
+            dispatch(setPost({ post }));
+        }
     }
 
 

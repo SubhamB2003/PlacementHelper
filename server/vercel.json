@@ -1,0 +1,16 @@
+{
+    "version": 1,
+    "name": "Placement Helper Server",
+    "builds": [
+        {
+            "src": "index.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/server/index.js"
+        }
+    ]
+}

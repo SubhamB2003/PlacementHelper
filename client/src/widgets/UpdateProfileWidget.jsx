@@ -1,25 +1,28 @@
-import { Box, Button, FormControl, FormLabel, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery } from '@mui/material';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Avatar, Box, Button, FormControl, FormLabel, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery } from '@mui/material';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
+import { ref, uploadBytes } from 'firebase/storage';
 import { Formik } from 'formik';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import * as yup from "yup";
+import { successSound } from '../components/Audios';
+import { storage } from '../firebase-config';
 import Navbar from '../pages/Navbar';
 import { setUser } from "../state/index";
-import { successSound } from '../components/Audios';
 
 
 
 const updatedSchema = yup.object().shape({
     userName: yup.string().required("username required"),
-    phoneNo: yup.string().required("phone number required").min(10, "number must be 10 digit").max(10, "number must be 10 digit"),
-    location: yup.string().required("location required"),
     profession: yup.string().required("profession required"),
-    gender: yup.string().required("gender required"),
-    graduateYear: yup.string().required("graduate year required"),
+    phoneNo: yup.string().min(10, "number must be 10 digit").max(10, "number must be 10 digit"),
+    isPicture: yup.string(),
+    gender: yup.string(),
     about: yup.string(),
+    location: yup.string(),
     facebookId: yup.string(),
     instagramId: yup.string(),
     linkedinId: yup.string(),
@@ -30,46 +33,51 @@ const updatedSchema = yup.object().shape({
 function UpdateProfileWidget() {
 
     const dispatch = useDispatch();
-    // const { palette } = useTheme();
-    // const token = useSelector((state) => state.token);
+
+    // const navigate = useNavigate();
     const user = useSelector((state) => state.user);
-    const navigate = useNavigate();
+    const token = useSelector((state) => state.token);
+
     const userId = user._id;
     const isNonMobile = useMediaQuery("(min-width: 1000px)");
-    const Years = ["2030", "2029", "2028", "2027", "2026", "2025", " 2024", "2023", "2022", "2021", "2020", "2019", "2018",
-        "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008", "2007", "2006", "2005", "2004", "2003",
-        "2002", "2001", "2000", "1999", "1998", "1997", "1996", "1995", "1994", "1993", "1992", "1991", "1990"];
-
-    let preview = `${process.env.REACT_APP_URL}/assets/${user.picturePath}`;
 
     const userUpdate = async (values) => {
-        const formData = new FormData();
         const options = {
-            maxSizeMB: 1,
-            maxWidthOrHeight: 1920,
-            useWebWorker: true
+            maxSizeMB: 3,
+            maxWidthOrHeight: 1000,
+            useWebWorker: true,
+            fileType: String
         }
 
         if (values.picture) {
-            const compressImage = await imageCompression(values.picture, options);
-            const userPicture = new File([compressImage], values.picture.name);
-            formData.append("picture", userPicture);
-            formData.append("picturePath", values.picture.name);
+            values.isPicture = true;
         } else {
-            formData.append("picturePath", user.picturePath);
+            values.isPicture = false;
         }
+        const res = await axios.patch(`${process.env.REACT_APP_URL}/users/user/${userId}`, values, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
 
-        for (let value in values) {
-            if (value !== "picture") {
-                formData.append(value, values[value]);
+        if (res.status === 200) {
+            if (values.picture) {
+                const compressImage = await imageCompression(values.picture, options);
+                const userPicture = new File([compressImage], values.picture.name, { type: compressImage.type });
+
+                const imageRef = ref(storage, `public/users/${res.data._id}`);
+                uploadBytes(imageRef, userPicture).then(() => {
+                    dispatch(setUser({ user: res.data }));
+                    successSound();
+                    // navigate("/");
+                    window.location.reload();
+                });
             }
         }
 
-        const res = await axios.patch(`${process.env.REACT_APP_URL}/user/${userId}`, formData);
-        dispatch(setUser({ user: res.data }));
-        successSound();
-        navigate("/");
     }
+
 
     return (
         <>
@@ -82,8 +90,8 @@ function UpdateProfileWidget() {
                         phoneNo: user.phoneNo,
                         gender: user.gender,
                         profession: user.profession,
+                        isPicture: user.isPicture,
                         location: user.location,
-                        graduateYear: user.graduateYear,
                         about: user.about,
                         facebookId: user.facebookId,
                         instagramId: user.instagramId,
@@ -105,7 +113,6 @@ function UpdateProfileWidget() {
                                         gridColumn: isNonMobile ? undefined : "span 4"
                                     }
                                 }}>
-
                                 <Box sx={{ gridColumn: "span 4" }}>
                                     <FormLabel htmlFor="dropzone-file" sx={{ position: "relative", width: "100%" }}>
                                         <TextField type='file' id="dropzone-file"
@@ -113,21 +120,30 @@ function UpdateProfileWidget() {
                                                 setFieldValue("picture", e.target.files[0])
                                             }}
                                             sx={{ visibility: "hidden" }} />
-                                        <img style={{
-                                            objectFit: "cover", borderRadius: "50%",
-                                            marginLeft: `${isNonMobile ? "3rem" : "7rem"}`
-                                        }}
-                                            width={100} height={100}
-                                            src={preview} alt="user" />
+
+                                        {user.isPicture && values.picture === undefined ?
+                                            <img style={{ objectFit: "cover", borderRadius: "50%", marginLeft: `${isNonMobile ? "3rem" : "7rem"}` }}
+                                                width={100} height={100} alt="user"
+                                                src={`${process.env.REACT_APP_USER_UPLOADIMAGE_STARTURL}${userId}${process.env.REACT_APP_USER_UPLOADIMAGE_ENDURL}`} />
+                                            :
+                                            values?.picture ?
+                                                <img style={{ objectFit: "cover", borderRadius: "50%", marginLeft: `${isNonMobile ? "3rem" : "7rem"}` }}
+                                                    width={100} height={100} alt="user"
+                                                    src={URL.createObjectURL(values?.picture)} />
+                                                : <Avatar>{user.userName.charAt(0)}</Avatar>
+                                        }
                                         <Typography textAlign="center" fontFamily="serif" sx={{ color: "green" }}>
-                                            {values.picture &&
+                                            {values?.picture &&
                                                 <>
-                                                    <span style={{ display: "none" }}>{preview = URL.createObjectURL(values.picture)}</span>
+                                                    <span style={{ display: "none" }}>
+                                                        {URL.createObjectURL(values?.picture)}
+                                                    </span>
                                                     {"Successfully Changed Image"}
                                                 </>
                                             }</Typography>
                                     </FormLabel>
                                 </Box>
+
                                 <TextField autoComplete='off' label="Username" name="userName"
                                     onBlur={handleBlur} onChange={handleChange}
                                     value={values.userName}
@@ -197,20 +213,6 @@ function UpdateProfileWidget() {
                                     error={Boolean(touched.githubId) && Boolean(errors.githubId)}
                                     helperText={touched.githubId && errors.githubId}
                                     sx={{ gridColumn: "span 2", input: { fontFamily: "serif" } }} />
-                                <FormControl sx={{ gridColumn: "span 2", fontFamily: "serif" }}>
-                                    <InputLabel id="demo-simple-select-label">Graduate Year</InputLabel>
-                                    <Select label="Graduate Year"
-                                        labelId="demo-simple-select-label" id="demo-simple-select"
-                                        name="graduateYear" onBlur={handleBlur} onChange={handleChange}
-                                        value={values.graduateYear}
-                                        error={Boolean(touched.graduateYear) && Boolean(errors.graduateYear)}
-                                        helpertext={touched.graduateYear && errors.graduateYear}
-                                    >
-                                        {Years.map((year, i) => (
-                                            <MenuItem key={i} value={year} sx={{ fontFamily: "serif" }}>{year}</MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
                             </Box>
 
                             <Box>

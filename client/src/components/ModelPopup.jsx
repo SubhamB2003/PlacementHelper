@@ -4,8 +4,8 @@ import axios from 'axios';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPost } from '../state';
-import Flexbetween from './Flexbetween';
 import { successSound } from './Audios';
+import Flexbetween from './Flexbetween';
 
 function ModelPopup({ setOpenModal, openModal, postId, desc, setDesc, cmtId, comment, setComment, isComment = false }) {
 
@@ -14,35 +14,37 @@ function ModelPopup({ setOpenModal, openModal, postId, desc, setDesc, cmtId, com
     const dispatch = useDispatch();
     const token = useSelector((state) => state.token);
     const userId = useSelector((state) => state.user._id);
-    const updatedAt = new Date();
 
     const handlePostUpdate = async () => {
-        const updatedPost = await axios.patch(`${process.env.REACT_APP_URL}/posts`, { postId, desc }, {
+        const updatedPost = await axios.patch(`${process.env.REACT_APP_URL}/posts/post`, { postId, desc }, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
-        const post = updatedPost.data;
         if (updatedPost.status === 200) {
+            const post = updatedPost.data;
             setOpenModal(false);
+            dispatch(setPost({ post }))
+            successSound();
         }
-        dispatch(setPost({ post }))
-        successSound();
+
     }
 
     const updatePostComment = async () => {
-        const Data = { userId, postId, cmtId, comment, updatedAt };
-        const res = await axios.patch(`${process.env.REACT_APP_URL}/posts/comment`, Data, {
+        const Data = { userId, postId, cmtId, comment };
+        const res = await axios.patch(`${process.env.REACT_APP_URL}/posts/post/comment`, Data, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
-        setOpenModal(false);
-        const post = res.data;
-        dispatch(setPost({ post }));
-        successSound();
+        if (res.status === 200) {
+            setOpenModal(false);
+            const post = res.data;
+            dispatch(setPost({ post }));
+            successSound();
+        }
     }
 
 

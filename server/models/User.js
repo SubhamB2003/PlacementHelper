@@ -15,35 +15,39 @@ const userSchema = mongoose.Schema({
         required: true,
         min: 5
     },
-    phoneNo: {
-        type: Number,
-        min: 9
-    },
-    picturePath: {
-        type: String,
-        default: null
-    },
-    location: {
-        type: String,
-        required: true,
+    isPicture: {
+        type: Boolean,
+        default: false
     },
     profession: {
         type: String,
         required: true,
     },
+    phoneNo: {
+        type: Number,
+        min: 9
+    },
+    location: {
+        type: String,
+    },
     gender: {
         type: String,
-        required: true,
     },
-    graduateYear: {
+    about: {
         type: String,
-        required: true,
     },
-    about: String,
-    facebookId: String,
-    instagramId: String,
-    linkedinId: String,
-    githubId: String,
+    facebookId: {
+        type: String,
+    },
+    instagramId: {
+        type: String,
+    },
+    linkedinId: {
+        type: String,
+    },
+    githubId: {
+        type: String,
+    },
     savePosts: {
         type: Array,
         default: []

@@ -5,18 +5,19 @@ const commentSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    userPicturePath: {
-        type: String,
-    },
     userName: {
         type: String,
         required: true
     },
+    isUserPicture: Boolean,
     comment: {
         type: String,
         required: true
     },
-    updatedAt: Date
+    updatedAt: {
+        type: Date,
+        default: new Date
+    }
 });
 
 const postSchema = mongoose.Schema({
@@ -32,8 +33,11 @@ const postSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    picturePath: String,
-    userPicturePath: String,
+    isPicture: {
+        type: Boolean,
+        default: false
+    },
+    isUserPicture: Boolean,
     likes: {
         type: Map,
         of: Boolean

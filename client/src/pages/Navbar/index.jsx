@@ -1,11 +1,11 @@
+import { DarkMode, InfoOutlined, LightMode, LogoutOutlined, SaveOutlined, Search } from "@mui/icons-material";
+import { Avatar, Box, Divider, IconButton, InputBase, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { setLogout, setMode } from "../../state/index";
 import { useNavigate } from "react-router-dom";
-import { DarkMode, InfoOutlined, LightMode, LogoutOutlined, SaveOutlined, Search } from "@mui/icons-material";
-import { Box, Divider, IconButton, InputBase, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Flexbetween from "../../components/Flexbetween";
 import UserImage from '../../components/UserImage';
+import { setLogout, setMode } from "../../state/index";
 import SearchWidget from '../../widgets/SearchWidget';
 
 
@@ -107,7 +107,8 @@ function Navbar() {
                 <Box display="flex" justifyContent="center" sx={{ marginRight: "2rem" }}>
                     <Tooltip title="Open settings" placement="right">
                         <IconButton onClick={handleMenu} sx={{ p: 0, width: "10px" }}>
-                            <UserImage width="40px" image={user.picturePath} size={55} />
+                            {user.isPicture ? <UserImage width="40px" userPictureId={user._id} size={55} />
+                                : <Avatar>{user.userName.charAt(0)?.toUpperCase()}</Avatar>}
                         </IconButton>
                     </Tooltip>
                     {open && (

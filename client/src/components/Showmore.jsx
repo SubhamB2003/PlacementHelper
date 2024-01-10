@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import React, { useState } from 'react';
 
 
-function Readmore({ children, fontSize = 17 }) {
+function Readmore({ children, fontSize = 17, mt }) {
 
     let text = children;
     const { palette } = useTheme();
@@ -12,7 +12,7 @@ function Readmore({ children, fontSize = 17 }) {
     const toggleReadMore = () => { setIsReadMore(!isReadMore) };
 
     return (
-        <Typography sx={{ mt: "1rem", padding: "4px" }} fontFamily='serif' fontSize={fontSize} color={main}>
+        <Typography sx={{ mt: `${mt === 0 ? "0" : "1rem"}`, padding: "4px" }} fontFamily='serif' fontSize={fontSize} color={main}>
             {isReadMore ? text.slice(0, 200) : text}
             {text.length > 200 &&
                 <span style={{ fontSize: "1rem", cursor: "pointer", color: { main }, fontWeight: "600" }} onClick={toggleReadMore}>

@@ -33,7 +33,7 @@ function UpdatePassword() {
     const handleFormSubmit = async (values, onSubmitProps) => {
         const password = values.password;
         const Data = { token, password };
-        await axios.patch(`${process.env.REACT_APP_URL}/users/forgotpassword`, Data)
+        await axios.patch(`${process.env.REACT_APP_URL}/users/user/update/password`, Data)
             .then((res) => {
                 if (res.status === 200) {
                     navigate("/");
@@ -53,9 +53,10 @@ function UpdatePassword() {
         }, 2000);
 
         const verifyToken = async () => {
-            await axios.get(`${process.env.REACT_APP_URL}/users/forgotpassword/verifytoken/${token}`)
+            await axios.get(`${process.env.REACT_APP_URL}/users/user/verifytoken/${token}`)
                 .then((res) => {
                     setTokenCheck(false);
+                    console.log(res);
                 })
                 .catch((error) => {
                     if (error.response) {
@@ -66,6 +67,7 @@ function UpdatePassword() {
                     }
                 });
         }
+
         verifyToken();
     }, []);
 

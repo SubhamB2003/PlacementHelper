@@ -1,7 +1,7 @@
 import { Box, Modal, useMediaQuery } from '@mui/material';
 import React, { useState } from 'react';
 
-function UserImage({ image, size, dpZoom = false }) {
+function UserImage({ userPictureId, size, dpZoom = false }) {
 
     const [open, setOpen] = useState(false);
     const handleClose = () => setOpen(false);
@@ -23,14 +23,13 @@ function UserImage({ image, size, dpZoom = false }) {
                         objectFit: "cover", borderRadius: "50%", marginLeft: `${!isNonMobile && "10vw"}`,
                         marginTop: `${!isNonMobile && "4.8vh"}`
                     }} width={isNonMobile ? "100%" : "80%"} height={isNonMobile ? "100%" : "80%"}
-                        src={`${process.env.REACT_APP_URL}/assets/${image}`} alt="user" />
+                        src={`${process.env.REACT_APP_USER_UPLOADIMAGE_STARTURL}${userPictureId}${process.env.REACT_APP_USER_UPLOADIMAGE_ENDURL}`} alt="user" />
                 </Box>
             </Modal>
 
             <Box width={size} height={size} onClick={() => dpZoom && setOpen((on) => !on)}>
-                <img style={{ objectFit: "cover", borderRadius: "50%" }}
-                    width={size} height={size}
-                    src={`${process.env.REACT_APP_URL}/assets/${image}`} alt="user" />
+                <img style={{ objectFit: "cover", borderRadius: "50%" }} width={size} height={size}
+                    src={`${process.env.REACT_APP_USER_UPLOADIMAGE_STARTURL}${userPictureId}${process.env.REACT_APP_USER_UPLOADIMAGE_ENDURL}`} alt="user" />
             </Box>
         </>
     )

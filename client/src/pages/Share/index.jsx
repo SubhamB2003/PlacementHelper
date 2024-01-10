@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ChatBubbleOutlineRounded, FavoriteBorderOutlined, ShareOutlined } from '@mui/icons-material';
-import { Box, Divider, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Avatar, Box, Divider, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -23,9 +23,11 @@ function SharePost() {
     const isNonMobile = useMediaQuery("(min-width: 1000px)");
 
     const handleSharePost = async () => {
-        const res = await axios.get(`${process.env.REACT_APP_URL}/posts/${postId}`);
-        setPost(res.data);
-        setCurState(true);
+        const res = await axios.get(`${process.env.REACT_APP_URL}/posts/post/share/${postId}`);
+        if (res.status === 200) {
+            setPost(res.data);
+            setCurState(true);
+        }
     }
 
     useEffect(() => {
@@ -46,24 +48,23 @@ function SharePost() {
                         m="2rem auto" borderRadius="1.5rem">
                         <WidgetWrapper m="0 0 2rem 0">
                             <Box display="flex" gap="1rem" sx={{ cursor: "pointer" }}>
-                                <UserImage image={post.userPicturePath} size={55} />
+                                {post?.isUserPicture ? <UserImage userPictureId={post?.userId} size={55} />
+                                    : <Avatar>{post?.userName.charAt(0).toUpperCase()}</Avatar>}
                                 <Box>
-                                    <Typography color={main} fontFamily="serif" variant="h4">{post.userName}</Typography>
-                                    <Typography color={medium} fontFamily="serif" fontSize="0.85rem">{new Date(post.createdAt).toLocaleString()}</Typography>
+                                    <Typography color={main} fontFamily="serif" variant="h4">{post?.userName}</Typography>
+                                    <Typography color={medium} fontFamily="serif" fontSize="0.85rem">{new Date(post?.createdAt).toLocaleString()}</Typography>
                                 </Box>
                             </Box>
-                            <Showmore sx={{ mt: "1rem", padding: "4px" }}>{post.description}</Showmore>
-                            {post.picturePath && (
-                                <img width="100%" style={{
-                                    borderRadius: "0.75rem",
-                                    marginTop: "0.75rem"
-                                }} src={`${process.env.REACT_APP_URL}/assets/${post.picturePath}`}
+                            <Showmore sx={{ mt: "1rem", padding: "4px" }}>{post?.description}</Showmore>
+                            {post?.isPicture && (
+                                <img width="100%" style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
+                                    src={`${process.env.REACT_APP_POST_UPLOADIMAGE_STARTURL}${post?._id}${process.env.REACT_APP_POST_UPLOADIMAGE_ENDURL}`}
                                     alt="postImage" />
                             )}
 
                             <Flexbetween>
-                                <Typography marginLeft={1} fontFamily="serif" sx={{ color: "skyblue" }}>{Object.keys(post.likes).length} {Object.keys(post.likes).length > 1 ? "Likes" : "Like"}</Typography>
-                                <Typography sx={{ color: "skyblue" }} fontFamily="serif">{post.comments.length} {post.comments.length > 1 ? "comments" : "comment"}</Typography>
+                                <Typography marginLeft={1} fontFamily="serif" sx={{ color: "skyblue" }}>{Object.keys(post?.likes).length} {Object.keys(post?.likes).length > 1 ? "Likes" : "Like"}</Typography>
+                                <Typography sx={{ color: "skyblue" }} fontFamily="serif">{post?.comments.length} {post?.comments.length > 1 ? "comments" : "comment"}</Typography>
                             </Flexbetween>
 
                             {/* <Divider /> */}
@@ -85,7 +86,7 @@ function SharePost() {
                                 <RWebShare
                                     data={{
                                         text: "Web Share",
-                                        url: `https://placement-helper-alumini.netlify.app/sharepost/${post._id}`,
+                                        url: `https://placement-helper-alumini.netlify.app/post/share/${post?._id}`,
                                         title: "Post Data",
                                     }}>
                                     <Flexbetween gap="0.3rem" sx={{ cursor: "pointer" }}>
@@ -100,12 +101,13 @@ function SharePost() {
                             {isComments && (
                                 <Box>
                                     <Divider />
-                                    {post.comments.map((commentData) => (
+                                    {post?.comments.map((commentData) => (
                                         <Box padding="0 1rem" key={commentData._id}>
                                             <Box>
                                                 <Flexbetween padding={1} display="flex" >
                                                     <Box display="flex" alignItems="center" gap={2}>
-                                                        <UserImage image={commentData.userPicturePath} size={isNonMobile ? 50 : 45} />
+                                                        {commentData.isUserPicture ? <UserImage image={commentData} size={isNonMobile ? 50 : 45} />
+                                                            : <Avatar>{post.userName.charAt(0).toUpperCase()}</Avatar>}
                                                         <Box>
                                                             <Typography fontFamily="serif" color={main} fontSize={isNonMobile ? 18 : 16}>{commentData.userName}</Typography>
                                                             <Typography fontFamily="serif" color={medium} fontSize={10}>{new Date(commentData.updatedAt).toLocaleString()}</Typography>
@@ -113,7 +115,7 @@ function SharePost() {
                                                     </Box>
                                                 </Flexbetween>
                                                 <Box sx={{ padding: "0 0 5px 0" }}>
-                                                    <Showmore fontSize={16}>{commentData.comment}</Showmore>
+                                                    <Showmore fontSize={16} mt={0}>{commentData.comment}</Showmore>
                                                 </Box>
                                             </Box>
                                             <Divider />

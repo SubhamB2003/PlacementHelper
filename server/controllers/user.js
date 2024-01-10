@@ -1,7 +1,5 @@
 import bcrypt from "bcrypt";
-import fs from "fs";
 import jwt from "jsonwebtoken";
-import path from "path";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
 
@@ -9,8 +7,25 @@ import User from "../models/User.js";
 // READ (PROFILE, SEARCH BAR)
 export const getUser = async (req, res) => {
     try {
-        const { id } = req.params;
-        const user = await User.findById(id);
+        const { userId } = req.params;
+        const userData = await User.findById(userId);
+
+        const user = {
+            _id: userData._id,
+            userName: userData.userName,
+            email: userData.email,
+            profession: userData.profession,
+            about: userData.about,
+            isPicture: userData.isPicture,
+            phoneNo: userData.phoneNo,
+            location: userData.location,
+            gender: userData.gender,
+            facebookId: userData.facebookId,
+            instagramId: userData.instagramId,
+            linkedinId: userData.linkedinId,
+            githubId: userData.githubId,
+            savePosts: userData.savePosts
+        }
         res.status(200).json(user);
 
     } catch (err) {
@@ -18,6 +33,34 @@ export const getUser = async (req, res) => {
     }
 }
 
+export const getAllUser = async (req, res) => {
+    try {
+        const user = await User.find();
+
+        const searchUserFilterData = user.map(
+            ({ _id, userName, profession, isPicture }) => {
+                return { _id, userName, profession, isPicture };
+            }
+        );
+        res.status(200).json(searchUserFilterData);
+
+    } catch (err) {
+        res.status(400).json({ "message": err.message });
+    }
+}
+
+export const verifyUserToken = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const verifyToken = jwt.verify(token, process.env.JWT_SECRET);
+        res.status(200).json({ message: "token is valid" });
+
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+}
+
+// READ ( For Forget Password )
 export const getUserByEmail = async (req, res) => {
     try {
         const { email } = req.params;
@@ -30,71 +73,26 @@ export const getUserByEmail = async (req, res) => {
     }
 }
 
-export const getAllUser = async (req, res) => {
-    try {
-        const user = await User.find();
-
-        const formattedSavePosts = user.map(
-            ({ _id, userName, profession, picturePath }) => {
-                return { _id, userName, profession, picturePath };
-            }
-        );
-        res.status(200).json(formattedSavePosts);
-
-    } catch (err) {
-        res.status(400).json({ "message": err.message });
-    }
-}
-
 
 // UPDATE
-export const AddRemoveSavedPost = async (req, res) => {
-    try {
-        const { userId, postId } = req.params;
-        const user = await User.findById(userId);
-        const post = await User.findById(postId);
-
-
-        if (user.savePosts.includes(postId)) {
-            user.savePosts = user.savePosts.filter((id) => id !== postId);
-        }
-        else {
-            user.savePosts.push(postId);
-        }
-
-        const savePost = await user.save();
-        res.status(200).json(savePost);
-
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-}
-
 export const updateUser = async (req, res) => {
     try {
         const { userId } = req.params;
-        const { userName, location, profession, gender, picturePath, about, graduateYear, phoneNo, facebookId, instagramId, linkedinId, githubId } = req.body;
+        const { userName, profession, gender, location, isPicture, about, phoneNo, facebookId, instagramId, linkedinId, githubId } = req.body;
 
-        const user = await User.findById(userId);
-        const pictureName = user.picturePath;
-
-        if (!user) return res.status(400);
-
-        if (pictureName !== picturePath && fs.existsSync(path.resolve("F:/PERSONAL/Projects/PlacementHelper/server/public/assets/", pictureName))) {
-            fs.unlinkSync(path.resolve("F:/PERSONAL/Projects/PlacementHelper/server/public/assets/", pictureName));
-        }
+        const userData = await User.findById(userId);
+        if (!userData) return res.status(400);
 
         const updateUser = await User.findByIdAndUpdate(
             userId,
             {
                 userName: userName,
                 phoneNo: phoneNo,
-                picturePath: picturePath,
+                isPicture: isPicture,
                 location: location,
                 profession: profession,
                 gender: gender,
                 about: about,
-                graduateYear: graduateYear,
                 facebookId: facebookId,
                 instagramId: instagramId,
                 linkedinId: linkedinId,
@@ -105,7 +103,7 @@ export const updateUser = async (req, res) => {
         await Post.updateMany(
             { "userId": userId },
             {
-                userPicturePath: picturePath
+                isUserPicture: isPicture
             },
             { new: true }
         );
@@ -115,12 +113,29 @@ export const updateUser = async (req, res) => {
             },
             {
                 $set: {
-                    "comments.$.userPicturePath": picturePath
+                    "comments.$.isUserPicture": isPicture
                 }
             },
             { new: true }
         );
-        res.status(200).json(updateUser);
+
+        const user = {
+            _id: updateUser._id,
+            userName: updateUser.userName,
+            email: updateUser.email,
+            profession: updateUser.profession,
+            about: updateUser.about,
+            isPicture: updateUser.isPicture,
+            phoneNo: updateUser.phoneNo,
+            location: updateUser.location,
+            gender: updateUser.gender,
+            facebookId: updateUser.facebookId,
+            instagramId: updateUser.instagramId,
+            linkedinId: updateUser.linkedinId,
+            githubId: updateUser.githubId,
+            savePosts: updateUser.savePosts
+        }
+        res.status(200).json(user);
 
     } catch (err) {
         res.status(400).json({ message: err.message });
@@ -130,6 +145,7 @@ export const updateUser = async (req, res) => {
 export const updatePassword = async (req, res) => {
     try {
         const { token, password } = req.body;
+
         const verifyToken = jwt.verify(token, process.env.JWT_SECRET);
         const userId = verifyToken.userId;
 
@@ -150,14 +166,38 @@ export const updatePassword = async (req, res) => {
     }
 }
 
-export const verifyUserToken = async (req, res) => {
+export const AddRemoveSavedPost = async (req, res) => {
     try {
-        const { token } = req.params;
-        const verifyToken = jwt.verify(token, process.env.JWT_SECRET);
-        res.status(200).json({ message: "token is valid" });
+        const { userId, postId } = req.params;
+        const user = await User.findById(userId);
+
+        if (user.savePosts.includes(postId)) {
+            user.savePosts = user.savePosts.filter((id) => id !== postId);
+        }
+        else {
+            user.savePosts.push(postId);
+        }
+
+        const savePostData = await user.save();
+        const savePost = {
+            _id: savePostData._id,
+            userName: savePostData.userName,
+            email: savePostData.email,
+            isPicture: savePostData.isPicture,
+            profession: savePostData.profession,
+            about: savePostData.about,
+            gender: savePostData.gender,
+            location: savePostData.location,
+            phoneNo: savePostData.phoneNo,
+            savePosts: savePostData.savePosts,
+            facebookId: savePostData.facebookId,
+            githubId: savePostData.githubId,
+            instagramId: savePostData.instagramId,
+            linkedinId: savePostData.linkedinId,
+        }
+        res.status(200).json(savePost);
 
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
 }
-

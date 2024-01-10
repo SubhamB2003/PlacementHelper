@@ -4,7 +4,7 @@ const initialState = {
     mode: "light",
     user: null,
     token: null,
-    posts: []
+    posts: [],
 };
 
 export const authSlice = createSlice({
@@ -26,7 +26,7 @@ export const authSlice = createSlice({
             if (state.user) {
                 state.user.savePosts = action.payload.savePosts;
             } else {
-                console.log("post non-exist :(");
+                console.log("post not-exist :(");
             }
         },
         setPosts: (state, action) => {

@@ -14,19 +14,21 @@ import Navbar from '../Navbar';
 function ProfilePage({ newUser = false }) {
 
     const { userId } = useParams();
-    const token = useSelector((state) => state.token);
     const [user, setUser] = useState(null);
+    const token = useSelector((state) => state.token);
     const isNonMobile = useMediaQuery("(min-width: 1000px)");
 
 
     const getUser = async () => {
-        const res = await axios.get(`${process.env.REACT_APP_URL}/users/${userId}`, {
+        const res = await axios.get(`${process.env.REACT_APP_URL}/users/user/${userId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
-        setUser(res.data);
+        if (res.status === 200) {
+            setUser(res.data);
+        }
     }
 
     useEffect(() => {

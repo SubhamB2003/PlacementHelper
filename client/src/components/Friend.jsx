@@ -1,5 +1,5 @@
 import { DeleteOutline, EditOutlined, MoreHoriz, SaveOutlined } from "@mui/icons-material";
-import { Box, Divider, IconButton, Tooltip, Typography, useTheme } from '@mui/material';
+import { Avatar, Box, Divider, IconButton, Tooltip, Typography, useTheme } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +11,7 @@ import UserImage from './UserImage';
 
 
 
-function Friend({ postUserId, name, createdAt, userPicturePath, postId, updatePostData, description }) {
+function Friend({ postUserId, userName, createdAt, isUserPicture, postId, updatePostData, description }) {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -28,34 +28,46 @@ function Friend({ postUserId, name, createdAt, userPicturePath, postId, updatePo
 
 
     const handlePostRemove = async (postId) => {
-        const res = await axios.delete(`${process.env.REACT_APP_URL}/posts/${postId}/removepost`, {
+        const res = await axios.delete(`${process.env.REACT_APP_URL}/posts/post/${postId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
-        const posts = res.data;
-        dispatch(setPosts({ posts }));
-        successSound();
+        if (res.status === 200) {
+            const posts = res.data;
+            dispatch(setPosts({ posts }));
+            successSound();
+        }
     }
 
     const handleSavePost = async (postId) => {
-        const res = await axios.patch(`${process.env.REACT_APP_URL}/users/${userId}/${postId}`);
-        dispatch(setSavePosts(res.data));
-        dispatch(setUser({ user: res.data }));
-        successSound();
+        const res = await axios.patch(`${process.env.REACT_APP_URL}/users/user/${userId}/${postId}`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (res.status === 200) {
+            dispatch(setSavePosts(res.data));
+            dispatch(setUser({ user: res.data }));
+            successSound();
+        }
     }
 
 
     return (
         <Flexbetween>
             <Flexbetween gap="1rem" sx={{ cursor: "pointer" }}>
-                <UserImage image={userPicturePath} size={55} />
+                {isUserPicture ?
+                    <UserImage userPictureId={postUserId} size={55} />
+                    : <Avatar>{userName.charAt(0).toUpperCase()}</Avatar>
+                }
                 <Box onClick={() => {
                     navigate(`/profile/${postUserId}`);
                     navigate(0);
                 }}>
-                    <Typography color={main} fontFamily="serif" variant="h4">{name}</Typography>
+                    <Typography color={main} fontFamily="serif" variant="h4">{userName}</Typography>
                     <Typography color={medium} fontFamily="serif" fontSize="0.85rem">{new Date(createdAt).toLocaleString()}</Typography>
                 </Box>
             </Flexbetween>
