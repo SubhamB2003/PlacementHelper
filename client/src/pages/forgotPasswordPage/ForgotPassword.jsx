@@ -41,7 +41,7 @@ function ForgotPassword() {
         const template_params = {
             user_name: "Admin",
             user_email: email,
-            message: "https://placement-helper-alumini.netlify.app/password/" + token
+            message: "https://placement-helper.vercel.app/password/" + token
         }
         emailjs.send(`${process.env.REACT_APP_SERVICEID}`, `${process.env.REACT_APP_TEMPLATEID}`, template_params, `${process.env.REACT_APP_USERID}`);
     }
