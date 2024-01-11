@@ -3,14 +3,14 @@
     "name": "Placement Helper Server",
     "builds": [
         {
-            "src": "index.js",
+            "src": "./index.js",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "/server/index.js"
+            "dest": "/"
         }
     ]
 }
