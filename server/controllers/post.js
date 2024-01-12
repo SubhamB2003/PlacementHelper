@@ -139,7 +139,6 @@ export const commentUpdate = async (req, res) => {
     try {
         const { userId, postId, cmtId, comment } = req.body;
         const user = await User.findById(userId);
-        let post = await Post.findById(postId);
 
         await Post.updateOne(
             {
@@ -157,8 +156,8 @@ export const commentUpdate = async (req, res) => {
             },
             { "new": true }
         );
-        post = await Post.findById(postId);
 
+        const post = await Post.findById(postId);
         res.status(200).json(post);
 
     } catch (err) {

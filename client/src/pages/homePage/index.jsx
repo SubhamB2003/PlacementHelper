@@ -15,12 +15,13 @@ function HomePage() {
     const userId = user._id;
     const isNonMobile = useMediaQuery("(min-width: 1100px)");
 
+
     return (
         <Box>
             <Navbar />
             <Box width="100%" padding="2rem 6%"
                 display={isNonMobile ? "flex" : "block"}
-                justifyContent="space-between">
+                justifyContent="space-between" gap="2rem" sx={{ overflowY: "hidden" }}>
                 <Box flexBasis={isNonMobile && "28%"}>
                     <UserWidget user={user} />
                 </Box>

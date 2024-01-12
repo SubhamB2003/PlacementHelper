@@ -6,7 +6,7 @@ import { ref, uploadBytes } from 'firebase/storage';
 import { Formik } from 'formik';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import * as yup from "yup";
 import { successSound } from '../components/Audios';
 import { storage } from '../firebase-config';
@@ -34,7 +34,7 @@ function UpdateProfileWidget() {
 
     const dispatch = useDispatch();
 
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const token = useSelector((state) => state.token);
 
@@ -49,11 +49,13 @@ function UpdateProfileWidget() {
             fileType: String
         }
 
-        if (values.picture) {
+        if (values.picture || user.isPicture === true) {
             values.isPicture = true;
-        } else {
+        }
+        else {
             values.isPicture = false;
         }
+
         const res = await axios.patch(`${process.env.REACT_APP_URL}/users/user/${userId}`, values, {
             headers: {
                 'Content-Type': 'application/json',
@@ -68,11 +70,16 @@ function UpdateProfileWidget() {
 
                 const imageRef = ref(storage, `public/users/${res.data._id}`);
                 uploadBytes(imageRef, userPicture).then(() => {
-                    dispatch(setUser({ user: res.data }));
                     successSound();
-                    // navigate("/");
+                    dispatch(setUser({ user: res.data }));
+
+                    navigate(`/profile/${user._id}`);
                     window.location.reload();
                 });
+            } else {
+                successSound();
+                dispatch(setUser({ user: res.data }));
+                navigate(`/profile/${user._id}`);
             }
         }
 
@@ -119,26 +126,28 @@ function UpdateProfileWidget() {
                                             onChange={(e) => {
                                                 setFieldValue("picture", e.target.files[0])
                                             }}
-                                            sx={{ visibility: "hidden" }} />
+                                            sx={{ display: "none" }} />
 
-                                        {user.isPicture && values.picture === undefined ?
-                                            <img style={{ objectFit: "cover", borderRadius: "50%", marginLeft: `${isNonMobile ? "3rem" : "7rem"}` }}
-                                                width={100} height={100} alt="user"
-                                                src={`${process.env.REACT_APP_USER_UPLOADIMAGE_STARTURL}${userId}${process.env.REACT_APP_USER_UPLOADIMAGE_ENDURL}`} />
-                                            :
-                                            values?.picture ?
-                                                <img style={{ objectFit: "cover", borderRadius: "50%", marginLeft: `${isNonMobile ? "3rem" : "7rem"}` }}
-                                                    width={100} height={100} alt="user"
-                                                    src={URL.createObjectURL(values?.picture)} />
-                                                : <Avatar>{user.userName.charAt(0)}</Avatar>
-                                        }
-                                        <Typography textAlign="center" fontFamily="serif" sx={{ color: "green" }}>
+                                        <Box display="flex" justifyContent="center">
+                                            {user.isPicture && values.picture === undefined ?
+                                                <img style={{ objectFit: "cover", borderRadius: "50%" }} width={100} height={100} alt="user"
+                                                    src={`${process.env.REACT_APP_USER_UPLOADIMAGE_STARTURL}${userId}${process.env.REACT_APP_USER_UPLOADIMAGE_ENDURL}`} />
+                                                :
+                                                values?.picture ?
+                                                    <img style={{ objectFit: "cover", borderRadius: "50%" }} width={100} height={100} alt="user"
+                                                        src={URL.createObjectURL(values?.picture)} />
+                                                    : <Avatar>{user.userName.charAt(0)}</Avatar>
+                                            }
+                                        </Box>
+                                        <Typography textAlign="center" fontFamily="serif" mt={1} sx={{ color: "green" }}>
                                             {values?.picture &&
                                                 <>
                                                     <span style={{ display: "none" }}>
                                                         {URL.createObjectURL(values?.picture)}
                                                     </span>
-                                                    {"Successfully Changed Image"}
+                                                    <span style={{ textAlign: "center" }}>
+                                                        Successfully Changed Image
+                                                    </span>
                                                 </>
                                             }</Typography>
                                     </FormLabel>

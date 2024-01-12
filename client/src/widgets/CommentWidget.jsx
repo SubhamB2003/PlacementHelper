@@ -10,7 +10,7 @@ import Showmore from '../components/Showmore'
 import UserImage from '../components/UserImage'
 import { setPost } from '../state'
 
-function CommentWidget({ commentData, curPostId }) {
+function CommentWidget({ commentData, postId }) {
 
     const dispatch = useDispatch();
     const { palette } = useTheme();
@@ -22,7 +22,6 @@ function CommentWidget({ commentData, curPostId }) {
     const medium = palette.neutral.medium;
 
     const cmtId = commentData._id;
-    const postId = curPostId;
     const [open, setOpen] = useState();
     const [comment, setComment] = useState("");
     const [openModal, setOpenModal] = useState(false);
@@ -38,9 +37,9 @@ function CommentWidget({ commentData, curPostId }) {
             }
         });
         if (res.status === 200) {
+            successSound();
             const post = res.data;
             dispatch(setPost({ post }));
-            successSound();
         }
     }
 
@@ -49,14 +48,13 @@ function CommentWidget({ commentData, curPostId }) {
         setComment(comment);
     }
 
-
     return (
         <Box padding="0 1rem" key={commentData._id}>
             <ModelPopup setOpenModal={setOpenModal} openModal={openModal} comment={comment} setComment={setComment} postId={postId} cmtId={cmtId} isComment />
             <Box>
                 <Flexbetween padding="0.6rem 0.6rem 0.6rem 0" display="flex" >
                     <Box display="flex" alignItems="center" gap={2}>
-                        {commentData.isUserPicture ? <UserImage image={commentData.userId} size={isNonMobile ? 50 : 45} />
+                        {commentData.isUserPicture ? <UserImage userPictureId={commentData?.userId} size={isNonMobile ? 50 : 45} />
                             : <Avatar>{commentData.userName.charAt(0).toUpperCase()}</Avatar>}
                         <Box>
                             <Typography fontFamily="serif" color={main} fontSize={isNonMobile ? 18 : 16}>{commentData.userName}</Typography>

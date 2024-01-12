@@ -23,10 +23,10 @@ function ModelPopup({ setOpenModal, openModal, postId, desc, setDesc, cmtId, com
             }
         });
         if (updatedPost.status === 200) {
+            successSound();
             const post = updatedPost.data;
             setOpenModal(false);
             dispatch(setPost({ post }))
-            successSound();
         }
 
     }
@@ -39,6 +39,7 @@ function ModelPopup({ setOpenModal, openModal, postId, desc, setDesc, cmtId, com
                 'Authorization': `Bearer ${token}`
             }
         });
+        console.log(res.data);
         if (res.status === 200) {
             setOpenModal(false);
             const post = res.data;

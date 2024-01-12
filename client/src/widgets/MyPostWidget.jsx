@@ -1,4 +1,4 @@
-import { AttachFileOutlined, DeleteOutline, EditOutlined, GifBoxOutlined, ImageOutlined, MicOutlined } from '@mui/icons-material';
+import { AttachFileOutlined, DeleteOutline, GifBoxOutlined, ImageOutlined, MicOutlined } from '@mui/icons-material';
 import { Avatar, Box, Button, Divider, IconButton, InputBase, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
@@ -58,13 +58,20 @@ function MyPostWidget() {
 
                 const imageRef = ref(storage, `public/posts/${res.data.currPostId}`);
                 uploadBytes(imageRef, userPicture).then(() => {
+                    successSound();
                     const posts = res.data.post;
                     dispatch(setPosts({ posts }));
-                    successSound();
                     setPicture(false);
                     setDescription("");
                     setImage(null);
                 });
+            } else {
+                successSound();
+                const posts = res.data.post;
+                dispatch(setPosts({ posts }));
+                setPicture(false);
+                setDescription("");
+                setImage(null);
             }
         }
     }
@@ -94,7 +101,7 @@ function MyPostWidget() {
             </Flexbetween>
             {picture && (
                 <Box border={`1px solid ${medium}`}
-                    borderRadius="5px" mt="1rem" p="1rem">
+                    borderRadius="5px" mt="1rem">
                     <Dropzone
                         acceptedFiles=".jpg, .jpeg, .png"
                         multiple={false}
@@ -105,22 +112,20 @@ function MyPostWidget() {
                                 <Box
                                     {...getRootProps()}
                                     border={`1px dashed ${medium}`}
-                                    borderRadius="5px" p="1rem"
-                                    width="100%">
+                                    borderRadius="5px" m={isNonMobile ? "1rem" : "0.6rem"}
+                                    p="0.2rem"
+                                    width="100%" height="20%" overflow="scroll">
+                                    <input {...getInputProps()} />
                                     <input {...getInputProps()} />
                                     {!image ? (
-                                        <p>Add Image Here</p>
+                                        <p style={{ fontFamily: "serif", textAlign: "center" }}>Add Image Here</p>
                                     ) : (
-                                        <Flexbetween>
-                                            <Typography>{image.name}</Typography>
-                                            <EditOutlined />
-                                        </Flexbetween>
+                                        <Typography fontFamily="serif" textAlign="center">{image.name}</Typography>
                                     )}
                                 </Box>
                                 {image && (
-                                    <IconButton onClick={() => setImage(null)}
-                                        sx={{ width: "15%" }}>
-                                        <DeleteOutline />
+                                    <IconButton onClick={() => setImage(null)} sx={{ marginRight: "0.5rem" }}>
+                                        <DeleteOutline fontSize='large' />
                                     </IconButton>
                                 )}
                             </Flexbetween>
@@ -178,5 +183,6 @@ function MyPostWidget() {
         </WidgetWrapper>
     )
 }
+
 
 export default MyPostWidget

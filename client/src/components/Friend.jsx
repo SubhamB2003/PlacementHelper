@@ -35,9 +35,9 @@ function Friend({ postUserId, userName, createdAt, isUserPicture, postId, update
             }
         });
         if (res.status === 200) {
+            successSound();
             const posts = res.data;
             dispatch(setPosts({ posts }));
-            successSound();
         }
     }
 
@@ -49,9 +49,9 @@ function Friend({ postUserId, userName, createdAt, isUserPicture, postId, update
             }
         });
         if (res.status === 200) {
+            successSound();
             dispatch(setSavePosts(res.data));
             dispatch(setUser({ user: res.data }));
-            successSound();
         }
     }
 
