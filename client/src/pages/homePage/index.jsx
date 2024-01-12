@@ -12,9 +12,7 @@ import Navbar from '../Navbar';
 function HomePage() {
 
     const user = useSelector((state) => state.user);
-    const userId = user._id;
     const isNonMobile = useMediaQuery("(min-width: 1100px)");
-
 
     return (
         <Box>
@@ -28,8 +26,8 @@ function HomePage() {
                 <Box flexBasis={isNonMobile && "40%"}
                     mt={!isNonMobile && "2rem"}>
                     <MyPostWidget />
-                    <Box m="2rem 0" />
-                    <PostsWidget userId={userId} />
+
+                    <PostsWidget />
                 </Box>
                 {isNonMobile && (
                     <Box flexBasis={isNonMobile && "28%"}>

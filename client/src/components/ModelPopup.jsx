@@ -16,17 +16,17 @@ function ModelPopup({ setOpenModal, openModal, postId, desc, setDesc, cmtId, com
     const userId = useSelector((state) => state.user._id);
 
     const handlePostUpdate = async () => {
-        const updatedPost = await axios.patch(`${process.env.REACT_APP_URL}/posts/post`, { postId, desc }, {
+        const singlePost = await axios.patch(`${process.env.REACT_APP_URL}/posts/post`, { postId, desc }, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
-        if (updatedPost.status === 200) {
+        if (singlePost.status === 200) {
             successSound();
-            const post = updatedPost.data;
+            const post = singlePost.data;
             setOpenModal(false);
-            dispatch(setPost({ post }))
+            dispatch(setPost({ post }));
         }
 
     }
@@ -39,7 +39,6 @@ function ModelPopup({ setOpenModal, openModal, postId, desc, setDesc, cmtId, com
                 'Authorization': `Bearer ${token}`
             }
         });
-        console.log(res.data);
         if (res.status === 200) {
             setOpenModal(false);
             const post = res.data;

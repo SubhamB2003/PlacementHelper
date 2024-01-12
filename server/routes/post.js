@@ -10,8 +10,8 @@ router.post("/post/comment", verifyToken, createComment);
 
 
 // READ
-router.get("/", verifyToken, getFeedPosts);
-router.get("/post/:userId", verifyToken, getUserPosts);
+router.get("/:sortOrder", verifyToken, getFeedPosts);
+router.get("/:userSortOrder/:userId", verifyToken, getUserPosts);
 router.get("/post/share/:postId", sharePost);
 
 

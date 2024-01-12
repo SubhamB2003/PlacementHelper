@@ -6,7 +6,6 @@ import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import * as yup from "yup";
-import { successSound } from '../../components/Audios';
 
 
 
@@ -37,7 +36,6 @@ function UpdatePassword() {
             .then((res) => {
                 if (res.status === 200) {
                     navigate("/");
-                    successSound();
                 }
             })
             .catch((error) => {
@@ -56,11 +54,9 @@ function UpdatePassword() {
             await axios.get(`${process.env.REACT_APP_URL}/users/user/verifytoken/${token}`)
                 .then((res) => {
                     setTokenCheck(false);
-                    console.log(res);
                 })
                 .catch((error) => {
                     if (error.response) {
-                        console.log(error.response.data.message);
                         if (error.response.data.message === "jwt expired") {
                             setTokenCheck(true);
                         }

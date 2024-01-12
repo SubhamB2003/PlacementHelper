@@ -1,4 +1,3 @@
-
 import Post from "../models/Post.js";
 import User from "../models/User.js";
 
@@ -19,7 +18,7 @@ export const createPost = async (req, res) => {
             comments: []
         });
         const { _id } = await newPost.save();
-        const post = await Post.find().sort({ 'updatedAt': -1, 'createdAt': - 1 }).lean();
+        const post = await Post.find().sort({ 'createdAt': - 1 }).lean();
 
         res.status(200).json({ currPostId: _id, post });
 
@@ -52,8 +51,16 @@ export const createComment = async (req, res) => {
 // READ
 export const getFeedPosts = async (req, res) => {
     try {
-        const post = await Post.find().sort({ 'updatedAt': -1, 'comments.updatedAt': -1 }).lean();
-        res.status(200).json(post);
+        const { sortOrder } = req.params;
+        let posts;
+
+        if (sortOrder === "ASCENDING") {
+            posts = await Post.find().sort({ 'createdAt': -1 }).lean();
+        } else {
+            posts = await Post.find().sort({ 'createdAt': 1 }).lean();
+        }
+
+        res.status(200).json(posts);
     } catch (err) {
         res.status(404).json({ message: err.message });
     }
@@ -61,9 +68,17 @@ export const getFeedPosts = async (req, res) => {
 
 export const getUserPosts = async (req, res) => {
     try {
-        const { userId } = req.params;
-        const post = await Post.find({ userId }).sort({ 'updatedAt': -1, 'comments.updatedAt': -1 }).lean();
-        res.status(200).json(post);
+
+        const { userSortOrder, userId } = req.params;
+        let posts;
+
+        if (userSortOrder === "ASCENDING") {
+            posts = await Post.find({ userId }).sort({ 'createdAt': -1 }).lean();
+        } else {
+            posts = await Post.find({ userId }).sort({ 'createdAt': 1 }).lean();
+        }
+
+        res.status(200).json(posts);
 
     } catch (err) {
         res.status(400).json({ message: err.message });
@@ -176,7 +191,7 @@ export const removePost = async (req, res) => {
         if (!currPost) return res.status(400).json({ message: "Does't found any post." });
 
         await Post.findByIdAndDelete(postId);
-        const post = await Post.find().sort({ 'updatedAt': -1, 'createdAt': - 1 }).lean();
+        const post = await Post.find().sort({ 'createdAt': - 1 }).lean();
         await User.updateMany(
             { "savePosts": postId },
             {

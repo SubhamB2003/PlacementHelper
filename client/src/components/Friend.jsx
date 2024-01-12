@@ -18,6 +18,7 @@ function Friend({ postUserId, userName, createdAt, isUserPicture, postId, update
     const user = useSelector((state) => state.user);
     const token = useSelector((state) => state.token);
     const userId = useSelector((state) => state.user._id);
+    
     const [open, setOpen] = useState();
     const isSave = user.savePosts.includes(postId);
 
@@ -35,7 +36,6 @@ function Friend({ postUserId, userName, createdAt, isUserPicture, postId, update
             }
         });
         if (res.status === 200) {
-            successSound();
             const posts = res.data;
             dispatch(setPosts({ posts }));
         }
@@ -49,7 +49,7 @@ function Friend({ postUserId, userName, createdAt, isUserPicture, postId, update
             }
         });
         if (res.status === 200) {
-            successSound();
+            !isSave && successSound();
             dispatch(setSavePosts(res.data));
             dispatch(setUser({ user: res.data }));
         }

@@ -1,4 +1,4 @@
-import { CircularProgress, createTheme, CssBaseline, Stack, ThemeProvider } from "@mui/material";
+import { Box, CircularProgress, createTheme, CssBaseline, Stack, ThemeProvider } from "@mui/material";
 import React, { lazy, Suspense, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
@@ -18,9 +18,11 @@ const UpdateProfileWidget = lazy(() => import('./widgets/UpdateProfileWidget'));
 
 const LoadingScreen = () => {
   return (
-    <Stack alignItems="center" mt={4}>
-      <CircularProgress />
-    </Stack>
+    <Box height="100vh" display="flex" justifyContent="center" alignItems="center">
+      <Stack>
+        <CircularProgress />
+      </Stack>
+    </Box>
   )
 }
 
@@ -64,6 +66,7 @@ function App() {
     )
   )
 }
+
 
 export default App
 

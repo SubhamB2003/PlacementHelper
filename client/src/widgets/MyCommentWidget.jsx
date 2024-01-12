@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Flexbetween from '../components/Flexbetween';
 // import UserImage from '../components/UserImage';
-import { successSound } from '../components/Audios';
 import { setPost } from '../state';
 
 
@@ -33,7 +32,6 @@ function MyCommentWidget({ postId }) {
         });
         if (res.status === 200) {
             setComment("");
-            successSound();
             const post = res.data;
             dispatch(setPost({ post }));
         }

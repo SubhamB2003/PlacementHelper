@@ -5,7 +5,6 @@ import { Box, Button, TextField, Typography, useMediaQuery, useTheme } from "@mu
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { successSound } from "../../components/Audios";
 
 
 function ForgotPassword() {
@@ -27,7 +26,6 @@ function ForgotPassword() {
                     .then((res) => {
                         setToken(res.data);
                         setMsg(true);
-                        successSound();
                         setPageType(false);
                     }).catch((err) => {
                         setPageType(false);

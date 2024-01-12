@@ -1,17 +1,15 @@
 import { ChatBubbleOutlineRounded, FavoriteBorderOutlined, FavoriteOutlined, ShareOutlined } from '@mui/icons-material';
 import { Box, Divider, IconButton, Typography, useTheme } from '@mui/material';
 import axios from 'axios';
-// import { ref } from 'firebase/storage';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RWebShare } from "react-web-share";
-import { successSound } from '../components/Audios';
+import { reactSound } from '../components/Audios';
 import Flexbetween from '../components/Flexbetween';
 import Friend from '../components/Friend';
 import ModelPopup from '../components/ModelPopup';
 import Showmore from '../components/Showmore.jsx';
 import WidgetWrapper from '../components/WidgetWrapper';
-// import { storage } from '../firebase-config.js';
 import { setPost } from '../state';
 import CommentWidget from './CommentWidget';
 import MyCommentWidget from './MyCommentWidget';
@@ -44,9 +42,11 @@ function PostWidget({ post }) {
             }
         });
         if (res.status === 200) {
-            const Data = res.data;
-            dispatch(setPost({ post: Data }));
-            successSound();
+            if (!isLiked) {
+                reactSound();
+            }
+            const singlePost = res.data;
+            dispatch(setPost({ post: singlePost }));
         }
     }
 

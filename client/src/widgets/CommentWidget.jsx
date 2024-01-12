@@ -3,7 +3,6 @@ import { Avatar, Box, Divider, IconButton, Tooltip, Typography, useMediaQuery, u
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { successSound } from '../components/Audios'
 import Flexbetween from '../components/Flexbetween'
 import ModelPopup from '../components/ModelPopup'
 import Showmore from '../components/Showmore'
@@ -37,7 +36,6 @@ function CommentWidget({ commentData, postId }) {
             }
         });
         if (res.status === 200) {
-            successSound();
             const post = res.data;
             dispatch(setPost({ post }));
         }

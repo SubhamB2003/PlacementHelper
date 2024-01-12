@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     mode: "light",
+    sortOrder: "ASCENDING",
+    userSortOrder: "ASCENDING",
     user: null,
     token: null,
     posts: [],
@@ -13,6 +15,12 @@ export const authSlice = createSlice({
     reducers: {
         setMode: (state) => {
             state.mode = state.mode === "light" ? "dark" : "light";
+        },
+        setSortOrder: (state, action) => {
+            state.sortOrder = state.sortOrder === "ASCENDING" ? "DESCENDING" : "ASCENDING";
+        },
+        setUserSortOrder: (state, action) => {
+            state.userSortOrder = state.userSortOrder === "ASCENDING" ? "DESCENDING" : "ASCENDING";
         },
         setLogin: (state, action) => {
             state.user = action.payload.user;
@@ -46,7 +54,7 @@ export const authSlice = createSlice({
     }
 });
 
-export const { setMode, setLogin, setLogout, setPosts,
+export const { setMode, setSortOrder, setUserSortOrder, setLogin, setLogout, setPosts,
     setPost, setUser, setSavePosts } = authSlice.actions;
 
 export default authSlice.reducer;  
