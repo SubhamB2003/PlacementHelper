@@ -1,18 +1,18 @@
-import { Typography } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import WidgetWrapper from "../components/WidgetWrapper";
 
 
 const AdvertWidget = () => {
 
-  // const { palette } = useTheme();
+  const { palette } = useTheme();
   // const dark = palette.neutral.dark;
-  // const main = palette.neutral.main;
+  const main = palette.neutral.main;
   // const medium = palette.neutral.medium;
 
   return (
     <WidgetWrapper>
-      <Typography fontFamily="serif" fontSize="1rem">Would you like to share any feature ideas?
-        <a href="mailto:subhamdemopurpose@gmail.com">{"  "}Click here</a>
+      <Typography fontFamily="serif" fontSize="1rem" color={main}>Would you like to share any feature ideas?
+        <a href="mailto:subhamdemopurpose@gmail.com" style={{ color: main }}>{"  "}Click here</a>
       </Typography>
 
       {/* <Flexbetween>

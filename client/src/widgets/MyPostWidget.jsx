@@ -25,7 +25,6 @@ function MyPostWidget() {
 
     const main = palette.neutral.main;
     const medium = palette.neutral.medium;
-    const mediumMain = palette.neutral.mediumMain;
     const isNonMobile = useMediaQuery("(min-width: 1000px)");
 
     const user = useSelector((state) => state.user);
@@ -138,30 +137,30 @@ function MyPostWidget() {
 
             <Flexbetween>
                 <Flexbetween gap="0.25rem" onClick={() => setPicture((img) => !img)}>
-                    <ImageOutlined sx={{ color: mediumMain }} />
-                    <Typography fontFamily="serif" sx={{ color: mediumMain, cursor: "pointer" }}>Image</Typography>
+                    <ImageOutlined sx={{ color: main }} />
+                    <Typography fontFamily="serif" sx={{ color: main, cursor: "pointer" }}>Image</Typography>
                 </Flexbetween>
 
                 {isNonMobile && (
                     <>
                         <Tooltip title="Updated soon">
                             <Flexbetween gap="0.25rem">
-                                <GifBoxOutlined sx={{ color: mediumMain }} />
-                                <Typography fontFamily="serif" color={mediumMain}>Clip</Typography>
+                                <GifBoxOutlined sx={{ color: main }} />
+                                <Typography fontFamily="serif" color={main}>Clip</Typography>
                             </Flexbetween>
                         </Tooltip>
 
                         <Tooltip title="Updated soon">
                             <Flexbetween gap="0.25rem">
-                                <AttachFileOutlined sx={{ color: mediumMain }} />
-                                <Typography fontFamily="serif" color={mediumMain}>Attachment</Typography>
+                                <AttachFileOutlined sx={{ color: main }} />
+                                <Typography fontFamily="serif" color={main}>Attachment</Typography>
                             </Flexbetween>
                         </Tooltip>
 
                         <Tooltip title="Updated soon">
                             <Flexbetween gap="0.25rem">
-                                <MicOutlined sx={{ color: mediumMain }} />
-                                <Typography fontFamily="serif" color={mediumMain}>Audio</Typography>
+                                <MicOutlined sx={{ color: main }} />
+                                <Typography fontFamily="serif" color={main}>Audio</Typography>
                             </Flexbetween>
                         </Tooltip>
                     </>

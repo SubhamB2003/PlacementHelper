@@ -43,8 +43,8 @@ function SearchWidget({ query }) {
             {query !== "" &&
                 users?.filter((user) => user.userName.toLowerCase().includes(query.toLowerCase())).map((user) => (
                     <Box display="flex" gap="1rem" padding={2} sx={{ cursor: "pointer" }} key={user._id}>
-                        {user.isPicture ? <UserImage userPictureId={user._id} size={50} />
-                            : <Avatar>{user.userName.charAt(0)?.toUpperCase()}</Avatar>}
+                        {user.isPicture ? <UserImage userPictureId={user._id} size={46} />
+                            : <Avatar sx={{ mx: "0.2rem" }}>{user.userName.charAt(0)?.toUpperCase()}</Avatar>}
                         <Box onClick={() => {
                             navigate(`/profile/${user._id}`);
                             navigate(0);

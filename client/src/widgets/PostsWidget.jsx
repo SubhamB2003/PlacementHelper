@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
-import { Box, Divider, Tooltip, Typography } from '@mui/material';
+import { Box, Divider, Tooltip, Typography, useTheme } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +8,9 @@ import { setPosts, setSortOrder, setUserSortOrder } from '../state';
 import PostWidget from './PostWidget';
 
 function PostsWidget({ userId, isProfile = false }) {
+
+    const { palette } = useTheme();
+    const main = palette.neutral.main;
 
     const dispatch = useDispatch();
     let posts = useSelector((state) => state.posts);
@@ -61,7 +64,7 @@ function PostsWidget({ userId, isProfile = false }) {
                     <Box display="flex" alignItems="center" sx={{ cursor: "pointer" }} onClick={() => isProfile ? getUserPosts() : getPosts()}>
                         {isProfile ? userSortOrder === "ASCENDING" ? <ArrowDownward fontSize='small' mx="0.8rem" /> : <ArrowUpward fontSize='small' mx="0.8rem" />
                             : sortOrder === "ASCENDING" ? <ArrowDownward fontSize='small' mx="0.8rem" /> : <ArrowUpward fontSize='small' mx="0.8rem" />}
-                        <Typography fontFamily="serif" fontSize="1rem">Sort</Typography>
+                        <Typography fontFamily="serif" fontSize="1rem" color={main}>Sort</Typography>
                     </Box>
                 </Tooltip>
             </Box>
